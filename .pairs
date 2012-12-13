@@ -1,0 +1,15 @@
+# This file is managed by chef! Override node.default["git_pairs_authors"] in attributes/git_pairs.rb to modify.
+
+pairs:
+  tl: Tom Lin
+  gs: Gal Steinitz
+  me: Mike Evans
+  qp: Quintan Park
+  aq: Alexander Quine
+  mg: Mike Gleeson; mikeg
+  mw: Max Wunderlich
+
+email:
+  prefix: townsend-dev+pair
+  domain: googlegroups.com
+
