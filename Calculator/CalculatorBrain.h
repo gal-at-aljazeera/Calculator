@@ -12,5 +12,9 @@
 
 - (void)pushOperand:(double)operand;
 - (double)performOperation:(NSString *)operation;
+- (double)calculateSine;
+- (double)calculateCosine;
+- (double)calculateSquareRoot;
+- (double)calculatePi;
 
 @end

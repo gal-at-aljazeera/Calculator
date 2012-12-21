@@ -61,4 +61,40 @@
     }
 }
 
+- (IBAction)sinPressed {
+    if (self.userIsInTheMiddleOfEnteringANumber) {
+        [self enterPressed];
+    }
+
+    double result = [self.brain calculateSine];
+    self.display.text = [NSString stringWithFormat:@"%g", result];
+}
+
+- (IBAction)cosPressed {
+    if (self.userIsInTheMiddleOfEnteringANumber) {
+        [self enterPressed];
+    }
+
+    double result = [self.brain calculateCosine];
+    self.display.text = [NSString stringWithFormat:@"%g", result];
+}
+
+- (IBAction)sqrtPressed {
+    if (self.userIsInTheMiddleOfEnteringANumber) {
+        [self enterPressed];
+    }
+    
+    double result = [self.brain calculateSquareRoot];
+    self.display.text = [NSString stringWithFormat:@"%g", result];
+}
+
+- (IBAction)piPressed {
+    if (self.userIsInTheMiddleOfEnteringANumber) [self enterPressed];
+
+    double pi = [self.brain calculatePi];
+    self.display.text = [NSString stringWithFormat:@"%g", pi];
+    [self.brain pushOperand:pi];
+}
+
+
 @end
