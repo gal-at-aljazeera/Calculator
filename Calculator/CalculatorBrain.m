@@ -83,4 +83,9 @@
     return 103993.0/33102.0;
 }
 
+- (void)clear
+{
+    [self.operandStack removeAllObjects];
+}
+
 @end

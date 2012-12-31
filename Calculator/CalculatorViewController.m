@@ -13,11 +13,13 @@
 @property (nonatomic) BOOL userIsInTheMiddleOfEnteringANumber;
 @property (nonatomic) BOOL userHasEnteredADecimalPoint;
 @property (nonatomic, strong) CalculatorBrain *brain;
+- (void)AddToHistory:(NSString *)historyText;
 @end
 
 @implementation CalculatorViewController
 
 @synthesize display = _display;
+@synthesize history = _history;
 @synthesize userIsInTheMiddleOfEnteringANumber = _userIsInTheMiddleOfEnteringANumber;
 @synthesize userHasEnteredADecimalPoint = _userHasEnteredADecimalPoint;
 @synthesize brain = _brain;
@@ -26,6 +28,11 @@
 {
     if (!_brain) _brain = [[CalculatorBrain alloc] init];
     return _brain;
+}
+
+- (void)AddToHistory:(NSString *)textToAddToHistory
+{
+    self.history.text = [NSString stringWithFormat:@"%@ %@", self.history.text, textToAddToHistory];
 }
 
 - (IBAction)digitPressed:(UIButton *)sender {
@@ -42,6 +49,8 @@
     [self.brain pushOperand:[self.display.text doubleValue]];
     self.userIsInTheMiddleOfEnteringANumber = NO;
     self.userHasEnteredADecimalPoint = NO;
+    
+    [self AddToHistory:self.display.text];
 }
 
 - (IBAction)operationPressed:(UIButton *)sender {
@@ -52,6 +61,7 @@
     NSString *operation = sender.currentTitle;
     double result = [self.brain performOperation:operation];
     self.display.text = [NSString stringWithFormat:@"%g", result];
+    [self AddToHistory:operation];
 }
 
 - (IBAction)decimalPointPressed {
@@ -96,5 +106,13 @@
     [self.brain pushOperand:pi];
 }
 
+- (IBAction)clearPressed {
+    self.userIsInTheMiddleOfEnteringANumber = NO;
+    self.userHasEnteredADecimalPoint = NO;
+    self.display.text = @"0";
+    self.history.text = @"";
+    [self.brain clear];
+    
+}
 
 @end

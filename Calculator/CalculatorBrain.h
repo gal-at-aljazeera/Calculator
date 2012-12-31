@@ -16,5 +16,6 @@
 - (double)calculateCosine;
 - (double)calculateSquareRoot;
 - (double)calculatePi;
+- (void)clear;
 
 @end
