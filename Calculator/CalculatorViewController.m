@@ -68,6 +68,7 @@
     if (!self.userHasEnteredADecimalPoint) {
         self.display.text = [self.display.text stringByAppendingString:@"."];
         self.userHasEnteredADecimalPoint = YES;
+        self.userIsInTheMiddleOfEnteringANumber = YES;
     }
 }
 
@@ -112,7 +113,19 @@
     self.display.text = @"0";
     self.history.text = @"";
     [self.brain clear];
-    
+}
+
+- (IBAction)backspacePressed {
+    if (self.userIsInTheMiddleOfEnteringANumber) {
+        NSUInteger newLength = self.display.text.length-1;
+        if (newLength==0) {
+            self.display.text = @"0";
+            self.userIsInTheMiddleOfEnteringANumber = NO;
+        } else {
+            NSString *newString = [self.display.text substringToIndex:newLength];
+            self.display.text = newString;
+        }
+    }
 }
 
 @end

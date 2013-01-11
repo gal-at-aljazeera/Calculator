@@ -25,17 +25,14 @@
 
 - (void)pushOperand:(double)operand
 {
-    NSLog(@"Pushing operand %g",operand);
     NSNumber *operandObject = [NSNumber numberWithDouble:operand];
     [self.operandStack addObject:operandObject];
-    NSLog(@"Operand stack is %@",self.operandStack);
 }
 
 - (double)popOperand
 {
     NSNumber *operandObject = [self.operandStack lastObject];
     double operand = [operandObject doubleValue];
-    NSLog(@"popOperand() - operandObject = %g",operand);
     if (operandObject) [self.operandStack removeLastObject];
     return [operandObject doubleValue];
 }
@@ -62,13 +59,11 @@
 
 - (double)calculateSine
 {
-    NSLog(@"calculateSine");
     return sin([self popOperand]);
 }
 
 - (double)calculateCosine
 {
-    NSLog(@"calculateSine");
     return cos([self popOperand]);
 }
 

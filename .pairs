@@ -1,13 +1,18 @@
 # This file is managed by chef! Override node.default["git_pairs_authors"] in attributes/git_pairs.rb to modify.
 
 pairs:
+  bb: Brian Butz; bbutz
+  il: Ian Lesperance; ilesperance
   tl: Tom Lin
+  mr: Mark Rushakoff
   gs: Gal Steinitz
   me: Mike Evans
   qp: Quintan Park
   aq: Alexander Quine
   mg: Mike Gleeson; mikeg
   mw: Max Wunderlich
+  gj: Glenn Jahnke; glennj
+
 
 email:
   prefix: townsend-dev+pair
