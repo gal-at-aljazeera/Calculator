@@ -14,6 +14,8 @@
 @property (nonatomic) BOOL userHasEnteredADecimalPoint;
 @property (nonatomic, strong) CalculatorBrain *brain;
 - (void)AddToHistory:(NSString *)historyText;
+- (void)addEqualSignToHistory;
+- (void)removeEqualSignFromHistory;
 @end
 
 @implementation CalculatorViewController
@@ -32,7 +34,18 @@
 
 - (void)AddToHistory:(NSString *)textToAddToHistory
 {
+    [self removeEqualSignFromHistory];
     self.history.text = [NSString stringWithFormat:@"%@ %@", self.history.text, textToAddToHistory];
+}
+
+- (void)removeEqualSignFromHistory
+{
+    self.history.text = [self.history.text stringByReplacingOccurrencesOfString:@" =" withString:@""];
+}
+
+- (void)addEqualSignToHistory
+{
+    [self AddToHistory:@"="];
 }
 
 - (IBAction)digitPressed:(UIButton *)sender {
@@ -43,6 +56,7 @@
         self.display.text = digit;
         self.userIsInTheMiddleOfEnteringANumber = YES;
     }
+    [self removeEqualSignFromHistory];
 }
 
 - (IBAction)enterPressed {
@@ -51,6 +65,7 @@
     self.userHasEnteredADecimalPoint = NO;
     
     [self AddToHistory:self.display.text];
+    [self removeEqualSignFromHistory];
 }
 
 - (IBAction)operationPressed:(UIButton *)sender {
@@ -62,6 +77,7 @@
     double result = [self.brain performOperation:operation];
     self.display.text = [NSString stringWithFormat:@"%g", result];
     [self AddToHistory:operation];
+    [self addEqualSignToHistory];
 }
 
 - (IBAction)decimalPointPressed {
@@ -69,42 +85,8 @@
         self.display.text = [self.display.text stringByAppendingString:@"."];
         self.userHasEnteredADecimalPoint = YES;
         self.userIsInTheMiddleOfEnteringANumber = YES;
+        [self removeEqualSignFromHistory];
     }
-}
-
-- (IBAction)sinPressed {
-    if (self.userIsInTheMiddleOfEnteringANumber) {
-        [self enterPressed];
-    }
-
-    double result = [self.brain calculateSine];
-    self.display.text = [NSString stringWithFormat:@"%g", result];
-}
-
-- (IBAction)cosPressed {
-    if (self.userIsInTheMiddleOfEnteringANumber) {
-        [self enterPressed];
-    }
-
-    double result = [self.brain calculateCosine];
-    self.display.text = [NSString stringWithFormat:@"%g", result];
-}
-
-- (IBAction)sqrtPressed {
-    if (self.userIsInTheMiddleOfEnteringANumber) {
-        [self enterPressed];
-    }
-    
-    double result = [self.brain calculateSquareRoot];
-    self.display.text = [NSString stringWithFormat:@"%g", result];
-}
-
-- (IBAction)piPressed {
-    if (self.userIsInTheMiddleOfEnteringANumber) [self enterPressed];
-
-    double pi = [self.brain calculatePi];
-    self.display.text = [NSString stringWithFormat:@"%g", pi];
-    [self.brain pushOperand:pi];
 }
 
 - (IBAction)clearPressed {
@@ -126,6 +108,12 @@
             self.display.text = newString;
         }
     }
+}
+
+- (IBAction)plusMinusPressed {
+    double currentValue = [self.display.text doubleValue] * -1;
+    self.display.text = [NSString stringWithFormat:@"%g",currentValue];
+    [self removeEqualSignFromHistory];
 }
 
 @end
