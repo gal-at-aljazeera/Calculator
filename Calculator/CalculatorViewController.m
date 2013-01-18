@@ -13,9 +13,7 @@
 @property (nonatomic) BOOL userIsInTheMiddleOfEnteringANumber;
 @property (nonatomic) BOOL userHasEnteredADecimalPoint;
 @property (nonatomic, strong) CalculatorBrain *brain;
-- (void)AddToHistory:(NSString *)historyText;
-- (void)addEqualSignToHistory;
-- (void)removeEqualSignFromHistory;
+- (void)displayProgram;
 @end
 
 @implementation CalculatorViewController
@@ -32,20 +30,9 @@
     return _brain;
 }
 
-- (void)AddToHistory:(NSString *)textToAddToHistory
+- (void)displayProgram
 {
-    [self removeEqualSignFromHistory];
-    self.history.text = [NSString stringWithFormat:@"%@ %@", self.history.text, textToAddToHistory];
-}
-
-- (void)removeEqualSignFromHistory
-{
-    self.history.text = [self.history.text stringByReplacingOccurrencesOfString:@" =" withString:@""];
-}
-
-- (void)addEqualSignToHistory
-{
-    [self AddToHistory:@"="];
+    self.history.text = [CalculatorBrain descriptionOfProgram:self.brain.program];
 }
 
 - (IBAction)digitPressed:(UIButton *)sender {
@@ -56,7 +43,6 @@
         self.display.text = digit;
         self.userIsInTheMiddleOfEnteringANumber = YES;
     }
-    [self removeEqualSignFromHistory];
 }
 
 - (IBAction)enterPressed {
@@ -64,8 +50,7 @@
     self.userIsInTheMiddleOfEnteringANumber = NO;
     self.userHasEnteredADecimalPoint = NO;
     
-    [self AddToHistory:self.display.text];
-    [self removeEqualSignFromHistory];
+    [self displayProgram];
 }
 
 - (IBAction)operationPressed:(UIButton *)sender {
@@ -76,8 +61,7 @@
     NSString *operation = sender.currentTitle;
     double result = [self.brain performOperation:operation];
     self.display.text = [NSString stringWithFormat:@"%g", result];
-    [self AddToHistory:operation];
-    [self addEqualSignToHistory];
+    [self displayProgram];
 }
 
 - (IBAction)decimalPointPressed {
@@ -85,7 +69,6 @@
         self.display.text = [self.display.text stringByAppendingString:@"."];
         self.userHasEnteredADecimalPoint = YES;
         self.userIsInTheMiddleOfEnteringANumber = YES;
-        [self removeEqualSignFromHistory];
     }
 }
 
@@ -113,7 +96,6 @@
 - (IBAction)plusMinusPressed {
     double currentValue = [self.display.text doubleValue] * -1;
     self.display.text = [NSString stringWithFormat:@"%g",currentValue];
-    [self removeEqualSignFromHistory];
 }
 
 @end

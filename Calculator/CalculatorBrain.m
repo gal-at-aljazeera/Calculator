@@ -29,9 +29,10 @@
     return [self.programStack copy];
 }
 
-+ (NSString *)descriptionOfProgram:(id)proram
++ (NSString *)descriptionOfProgram:(id)program
 {
-    return @"TODO";
+    NSLog(@"%@",program);
+    return [program componentsJoinedByString:@" "];
 }
 
 - (void)pushOperand:(double)operand
@@ -44,6 +45,16 @@
     [self.programStack addObject:operation];
     return [[self class] runProgram:self.program];
 }
+
++(double)runProgram:(id)program
+{
+    NSMutableArray *stack;
+    if ([program isKindOfClass:[NSArray class]]) {
+        stack = [program mutableCopy];
+    }
+    return [self popOperandOffProgramStack:stack];
+}
+
 
 +(double)popOperandOffProgramStack:(NSMutableArray *)stack
 {
@@ -86,14 +97,6 @@
     return result;
 }
 
-+(double)runProgram:(id)program
-{
-    NSMutableArray *stack;
-    if ([program isKindOfClass:[NSArray class]]) {
-        stack = [program mutableCopy];
-    }
-    return [self popOperandOffProgramStack:stack];
-}
 
 - (void)clear
 {
