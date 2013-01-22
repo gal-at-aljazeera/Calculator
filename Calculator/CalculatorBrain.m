@@ -35,9 +35,14 @@
     return [program componentsJoinedByString:@" "];
 }
 
-- (void)pushOperand:(double)operand
+- (void)pushDoubleOperand:(double)operand
 {
     [self.programStack addObject:[NSNumber numberWithDouble:operand]];
+}
+
+- (void)pushVariableOperand:(NSString *)operand
+{
+    [self.programStack addObject:operand];
 }
 
 - (double)performOperation:(NSString *)operation
@@ -97,10 +102,21 @@
     return result;
 }
 
-
 - (void)clear
 {
     [self.programStack removeAllObjects];
+}
+
++ (NSSet *)variablesUsedInProgram:(id)program
+{
+    NSMutableArray *variablesInProgram = [[NSMutableArray alloc] init];
+    
+    for(id operatorOrOperand in program) {
+        if ([operatorOrOperand isKindOfClass:[NSString class]]) {
+            [variablesInProgram addObject:operatorOrOperand];
+        }
+    }
+    return [[NSSet alloc] initWithArray:variablesInProgram];
 }
 
 @end

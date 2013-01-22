@@ -10,7 +10,9 @@
 
 @interface CalculatorBrain : NSObject
 
-- (void)pushOperand:(double)operand;
+- (void)pushDoubleOperand:(double)operand;
+- (void)pushVariableOperand:(NSString *)operand;
+
 - (double)performOperation:(NSString *)operation;
 - (void)clear;
 
@@ -18,5 +20,7 @@
 
 + (NSString *)descriptionOfProgram:(id)program;
 + (double)runProgram:(id)program;
+//+ (double)runProgram:(id)program usingVariableValues:(NSDictionary *)variableValues;
++ (NSSet *)variablesUsedInProgram:(id)program;
 
 @end
