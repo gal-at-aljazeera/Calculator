@@ -12,15 +12,17 @@
 
 - (void)pushDoubleOperand:(double)operand;
 - (void)pushVariableOperand:(NSString *)operand;
+- (void)pushOperation:(NSString *)operation;
 
-- (double)performOperation:(NSString *)operation;
+//- (double)performOperation:(NSString *)operation;
 - (void)clear;
 
 @property (nonatomic, readonly) id program;
 
 + (NSString *)descriptionOfProgram:(id)program;
 + (double)runProgram:(id)program;
-//+ (double)runProgram:(id)program usingVariableValues:(NSDictionary *)variableValues;
++ (double)runProgram:(id)program usingVariableValues:(NSDictionary *)variableValues;
 + (NSSet *)variablesUsedInProgram:(id)program;
++ (NSArray *)validOperators;
 
 @end

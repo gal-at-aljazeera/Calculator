@@ -29,6 +29,11 @@
     return [self.programStack copy];
 }
 
++ (NSArray *)validOperators
+{
+    return [NSArray arrayWithObjects:@"Sqrt", @"-", @"*", @"/", @"+", @"π", @"Sin", @"Cos", nil];
+}
+
 + (NSString *)descriptionOfProgram:(id)program
 {
     NSLog(@"%@",program);
@@ -45,13 +50,18 @@
     [self.programStack addObject:operand];
 }
 
-- (double)performOperation:(NSString *)operation
+- (void)pushOperation:(NSString *)operation
 {
     [self.programStack addObject:operation];
-    return [[self class] runProgram:self.program];
 }
 
-+(double)runProgram:(id)program
+//- (double)performOperation:(NSString *)operation
+//{
+//    [self.programStack addObject:operation];
+//    return [[self class] runProgram:self.program];
+//}
+
++ (double)runProgram:(id)program
 {
     NSMutableArray *stack;
     if ([program isKindOfClass:[NSArray class]]) {
@@ -60,6 +70,27 @@
     return [self popOperandOffProgramStack:stack];
 }
 
++ (double)runProgram:(id)program usingVariableValues:(NSDictionary *)variableValues
+{
+    NSNumber *zero = [[NSNumber alloc] initWithDouble:0];
+    
+    NSMutableArray *stack = [[NSMutableArray alloc] init];
+    
+    id objectToAdd;
+    
+    for(id entry in program)
+    {
+        if ([entry isKindOfClass:[NSString class]] && ![self.validOperators containsObject:entry])
+        {
+            id value = [variableValues valueForKey:entry];
+            objectToAdd = (value ? value : zero);
+        } else {
+            objectToAdd = entry;
+        }
+        [stack addObject:objectToAdd];
+    }
+    return [self runProgram:stack];
+}
 
 +(double)popOperandOffProgramStack:(NSMutableArray *)stack
 {
@@ -111,9 +142,9 @@
 {
     NSMutableArray *variablesInProgram = [[NSMutableArray alloc] init];
     
-    for(id operatorOrOperand in program) {
-        if ([operatorOrOperand isKindOfClass:[NSString class]]) {
-            [variablesInProgram addObject:operatorOrOperand];
+    for(id entry in program) {
+        if ([entry isKindOfClass:[NSString class]] && ![CalculatorBrain.validOperators containsObject:entry]) {
+            [variablesInProgram addObject:entry];
         }
     }
     return [[NSSet alloc] initWithArray:variablesInProgram];

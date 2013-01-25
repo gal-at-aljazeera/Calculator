@@ -60,14 +60,16 @@
 
 - (IBAction)operationPressed:(UIButton *)sender
 {
-    
     [self pressEnterIfNeeded];
-
-    NSString *operation = sender.currentTitle;
-    double result = [self.brain performOperation:operation];
-    self.display.text = [NSString stringWithFormat:@"%g", result];
-    
+    [self.brain pushOperation:sender.currentTitle];
+    [self runCurrentProgram];
     [self displayProgram];
+}
+
+- (void)runCurrentProgram
+{
+    double result = [CalculatorBrain runProgram:self.brain.program usingVariableValues:self.testVariableValues];
+    self.display.text = [NSString stringWithFormat:@"%g", result];
 }
 
 - (IBAction)decimalPointPressed
@@ -86,6 +88,8 @@
     self.display.text = @"0";
     self.history.text = @"";
     [self.brain clear];
+    self.testVariableValues = [[NSDictionary alloc] init];
+    self.variableValuesDisplay.text = @"";
 }
 
 - (IBAction)backspacePressed
@@ -117,37 +121,35 @@
 
 - (IBAction)variablePressed:(UIButton *)sender
 {
-    [self pressEnterIfNeeded];
-    
+    [self pressEnterIfNeeded];   
     [self.brain pushVariableOperand:sender.currentTitle];
-    
     [self displayProgram];
 }
 
 - (IBAction)testPressed:(UIButton *)sender
 {
-
-    if (sender.currentTitle == @"Test 1")
+    if ([sender.currentTitle isEqualToString:@"Test 1"])
     {
         self.testVariableValues = [NSDictionary dictionaryWithObjectsAndKeys:
-                                   @"x", [NSNumber numberWithDouble:5],
-                                   @"a", [NSNumber numberWithDouble:-5],
-                                   @"b", [NSNumber numberWithDouble:100],
+                                   [NSNumber numberWithDouble:5], @"x",
+                                   [NSNumber numberWithDouble:-5], @"a",
+                                   [NSNumber numberWithDouble:100], @"b",
                                    nil];
     }
-    else if (sender.currentTitle == @"Test 2")
+    else if ([sender.currentTitle isEqualToString:@"Test 2"])
     {
         self.testVariableValues = [NSDictionary dictionaryWithObjectsAndKeys:
-                                   @"x", [NSNumber numberWithDouble:100],
-                                   @"a", [NSNumber numberWithDouble:3],
+                                   [NSNumber numberWithDouble:100], @"x",
+                                   [NSNumber numberWithDouble:3], @"a",
                                    nil];
     }
-    else if (sender.currentTitle == @"Test 3")
+    else if ([sender.currentTitle isEqualToString:@"Test 3"])
     {
         self.testVariableValues = nil;
     }
-    
+
     [self updateVariableValuesDisplay];
+    [self runCurrentProgram];
 }
 
 - (void)updateVariableValuesDisplay
@@ -155,14 +157,11 @@
     NSSet *variables = [CalculatorBrain variablesUsedInProgram:self.brain.program];
     NSDictionary *values = self.testVariableValues;
     NSMutableArray *output = [[NSMutableArray alloc] init];
-    
-    if (variables)
+
+    for(id variable in variables)
     {
-        for(id variable in variables)
-        {
-            double value = [[values valueForKey:variable] doubleValue];
-            [output addObject:[NSString stringWithFormat:@"%@ = %g",variable,value]];
-        }
+        double value = [[values valueForKey:variable] doubleValue];
+        [output addObject:[NSString stringWithFormat:@"%@ = %g",variable,value]];
     }
     
     self.variableValuesDisplay.text = [output componentsJoinedByString:@"  "];
