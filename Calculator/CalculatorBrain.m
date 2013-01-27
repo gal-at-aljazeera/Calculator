@@ -29,15 +29,79 @@
     return [self.programStack copy];
 }
 
-+ (NSArray *)validOperators
+static NSSet *zeroOperandOperators;
+static NSSet *oneOperandOperators;
+static NSSet *twoOperandOperators;
+
++ (BOOL)isZeroOperandOperator:(NSString *)entry
 {
-    return [NSArray arrayWithObjects:@"Sqrt", @"-", @"*", @"/", @"+", @"π", @"Sin", @"Cos", nil];
+    if (!zeroOperandOperators) zeroOperandOperators = [[NSSet alloc] initWithObjects:@"π", nil];
+    return [zeroOperandOperators containsObject:entry];
+}
+
++ (BOOL)isOneOperandOperator:(NSString *)entry
+{
+    if (!oneOperandOperators) oneOperandOperators = [[NSSet alloc] initWithObjects:@"Sqrt", @"Sin", @"Cos", nil];
+    return [oneOperandOperators containsObject:entry];
+}
+
+
++ (BOOL)isTwoOperandOperator:(NSString *)entry
+{
+    if (!twoOperandOperators) twoOperandOperators = [[NSSet alloc] initWithObjects:@"-", @"*", @"/", @"+", nil];
+    return [twoOperandOperators containsObject:entry];
+}
+
++ (BOOL)isOperator:(NSString *)entry
+{
+    return [self isZeroOperandOperator:entry] || [self isOneOperandOperator:entry] || [self isTwoOperandOperator:entry];
+}
+
++ (BOOL)isVariable:(NSString *)entry
+{
+    return [entry isKindOfClass:[NSString class]] && ![self isOperator:entry];
+}
+
++ (double)precedenceOf:(NSString *)operator
+{
+    if ([self isTwoOperandOperator:operator])
+        return ([operator isEqualToString:@"*"] || [operator isEqualToString:@"/"]) ? 2 : 1;
+    else
+        return ([self isOneOperandOperator:operator]) ? 3 : 0;
 }
 
 + (NSString *)descriptionOfProgram:(id)program
 {
-    NSLog(@"%@",program);
-    return [program componentsJoinedByString:@" "];
+    NSMutableArray *stack = [program mutableCopy];
+    NSMutableArray *output = [[NSMutableArray alloc] init];
+    
+    while ([stack count]>0) {
+        [output addObject:[self popOperandAndDescribe:stack withPrecedenceOfCaller:0]];
+    }
+    return [output componentsJoinedByString:@", "];
+    
+}
++ (NSString *)popOperandAndDescribe:(NSMutableArray *)stack withPrecedenceOfCaller:(double)precedenceOfCaller
+{
+    id entry = [stack lastObject];
+    if (entry) [stack removeLastObject];
+    
+    
+    if ([self isZeroOperandOperator:entry]) {
+        return entry;
+    } else if ([self isOneOperandOperator:entry]) {
+        return [NSString stringWithFormat:@"%@(%@)",entry,[self popOperandAndDescribe:stack withPrecedenceOfCaller:0]];
+    } else if ([self isTwoOperandOperator:entry]) {
+        
+        double precedence = [self precedenceOf:entry];
+        NSString *format = (precedenceOfCaller > precedence) ? @"(%@ %@ %@)" : @"%@ %@ %@";
+        
+        id operator1 = [self popOperandAndDescribe:stack withPrecedenceOfCaller:precedence];
+        id operator2 = [self popOperandAndDescribe:stack withPrecedenceOfCaller:precedence];
+        return [NSString stringWithFormat:format,operator2,entry,operator1];
+    } else {
+        return [NSString stringWithFormat:@"%@",(entry ?: @"0")];
+    }
 }
 
 - (void)pushDoubleOperand:(double)operand
@@ -54,12 +118,6 @@
 {
     [self.programStack addObject:operation];
 }
-
-//- (double)performOperation:(NSString *)operation
-//{
-//    [self.programStack addObject:operation];
-//    return [[self class] runProgram:self.program];
-//}
 
 + (double)runProgram:(id)program
 {
@@ -80,7 +138,7 @@
     
     for(id entry in program)
     {
-        if ([entry isKindOfClass:[NSString class]] && ![self.validOperators containsObject:entry])
+        if ([self isVariable:entry])
         {
             id value = [variableValues valueForKey:entry];
             objectToAdd = (value ? value : zero);
@@ -143,7 +201,7 @@
     NSMutableArray *variablesInProgram = [[NSMutableArray alloc] init];
     
     for(id entry in program) {
-        if ([entry isKindOfClass:[NSString class]] && ![CalculatorBrain.validOperators containsObject:entry]) {
+        if ([self isVariable:entry]) {
             [variablesInProgram addObject:entry];
         }
     }
